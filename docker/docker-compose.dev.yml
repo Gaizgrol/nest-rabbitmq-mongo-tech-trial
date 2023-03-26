@@ -21,10 +21,15 @@ services:
       DATABASE_NAME: payever-tech-interview
       DATABASE_USER: api
       DATABASE_PASSWORD: anotherexample
+      MESSAGING_SERVICE_HOSTNAME: management-rabbit-mq
+      MESSAGING_SERVICE_PORT: 5672
+      MESSAGING_SERVICE_USER: user
+      MESSAGING_SERVICE_PASS: pass
     networks:
       - inner-network
 
   database-mongo:
+    container_name: mongo
     image: mongo:6.0
     restart: always
     environment:
@@ -39,7 +44,8 @@ services:
     networks:
       - inner-network
 
-  dba-mongo:
+  dbm-mongo:
+    container_name: database-management
     image: mongo-express
     restart: always
     ports:
@@ -50,6 +56,19 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://root:example@database-mongo:27017/
     networks:
       - inner-network
+
+  management-rabbit-mq:
+    container_name: rabbit-mq
+    image: rabbitmq:3.11-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=user
+      - RABBITMQ_DEFAULT_PASS=pass
+    networks:
+      - inner-network
+
 
 networks:
   inner-network:
