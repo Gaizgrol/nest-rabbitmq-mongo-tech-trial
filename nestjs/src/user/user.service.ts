@@ -1,22 +1,23 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import IHttpClient from 'src/providers/http/HttpClient.interface';
-import IMailer from 'src/providers/mail/Mailer.interface';
-import IProducer from 'src/providers/messaging/Producer.interface';
-import IFileSystem from 'src/providers/storage/FileSystem.interface';
-import IUserRepository from './repository/user.repository.interface';
+
+import AbstractUserRepository from './repository/user.repository.abstract';
 
 import CreateUserRequestDto from './dto/request/createUser.dto';
 import GetUserResponseDto from './dto/response/getUser.dto';
 import { randomUUID } from 'crypto';
+import AbstractStorage from 'src/storage/storage.abstract';
+import AbstractHttpClient from 'src/http/client.abstract';
+import AbstractMessaging from 'src/messaging/messaging.abstract';
+import AbstractMailer from 'src/mail/mailer.abstract';
 
 @Injectable()
 export class UserService {
   constructor(
-    private userRepository: IUserRepository,
-    private fileSystem: IFileSystem,
-    private httpClient: IHttpClient,
-    private producer: IProducer,
-    private mailer: IMailer,
+    private userRepository: AbstractUserRepository,
+    private fileSystem: AbstractStorage,
+    private httpClient: AbstractHttpClient,
+    private messaging: AbstractMessaging,
+    private mailer: AbstractMailer,
   ) {}
 
   async createUser(
@@ -24,7 +25,7 @@ export class UserService {
   ): Promise<GetUserResponseDto> {
     const storedUser = await this.userRepository.createUser(createUserDto);
     await Promise.all([
-      this.producer.sendTo('MESSAGES', `Created user ${storedUser.id}`),
+      this.messaging.sendTo('MESSAGES', `Created user ${storedUser.id}`),
       this.mailer.send({
         from: 'me@dummy.sender',
         to: storedUser.email,

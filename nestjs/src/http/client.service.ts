@@ -1,9 +1,9 @@
-import IHttpClient, {
-  HttpClientFile,
-  HttpClientResponse,
-} from './HttpClient.interface';
+import { Injectable } from '@nestjs/common';
+import AbstractHttpClient from './client.abstract';
+import { HttpClientFile, HttpClientResponse } from './client.types';
 
-export default class HttpClient extends IHttpClient {
+@Injectable()
+export default class HttpClientService extends AbstractHttpClient {
   async get<T = unknown>(url: string): Promise<HttpClientResponse<T>> {
     const response = await fetch(url, {
       method: 'GET',
@@ -18,7 +18,6 @@ export default class HttpClient extends IHttpClient {
     const response = await fetch(url, {
       method: 'GET',
     });
-    console.log('ok?', response.ok, 'status', response.status);
     return {
       success: response.ok,
       content: await response.arrayBuffer(),

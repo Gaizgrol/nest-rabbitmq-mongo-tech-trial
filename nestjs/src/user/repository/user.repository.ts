@@ -1,18 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import IHttpClient from 'src/providers/http/HttpClient.interface';
+import AbstractHttpClient from 'src/http/client.abstract';
 import { DataSource, MongoEntityManager } from 'typeorm';
 import { Avatar } from '../entities/avatar.entity';
 import { User } from '../entities/user.entity';
-import IUserRepository from './user.repository.interface';
+import AbstractUserRepository from './user.repository.abstract';
 
 import CreateUserRequestDto from '../dto/request/createUser.dto';
 import ReqResUserDto from '../dto/response/reqResUser.dto';
 
 @Injectable()
-export default class UserRepository implements IUserRepository {
+export default class UserRepository implements AbstractUserRepository {
   private readonly manager: MongoEntityManager;
 
-  constructor(private dataSource: DataSource, private httpClient: IHttpClient) {
+  constructor(
+    private dataSource: DataSource,
+    private httpClient: AbstractHttpClient,
+  ) {
     this.manager = this.dataSource.mongoManager;
   }
 

@@ -1,27 +1,24 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { join } from 'path';
 import { env } from 'process';
 
+const type = 'mongodb' as const;
 const {
   DATABASE_HOST: host,
-  DATABASE_PORT: port,
   DATABASE_USER: username,
   DATABASE_PASSWORD: password,
-  DATABASE_NAME: database,
+  DATABASE_NAME: dbName,
 } = env;
-
 const entities = ['dist/**/*.entity.js'];
+const port = Number(env.DATABASE_PORT);
 
-console.log({ entities });
-
-const dbConfig: TypeOrmModuleOptions = {
-  type: 'mongodb' as const,
-  port: Number(port),
+const database: TypeOrmModuleOptions = {
+  type,
+  port,
   host,
   username,
   password,
-  database,
+  database: dbName,
   entities,
 };
 
-export default dbConfig;
+export default database;
