@@ -19,6 +19,7 @@ const database: TypeOrmModuleOptions = {
   password,
   database: dbName,
   entities,
+  useUnifiedTopology: true,
 };
 
 export default database;

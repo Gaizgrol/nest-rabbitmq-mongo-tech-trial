@@ -9,9 +9,11 @@ const sleep = (ms: number) =>
 
 @Injectable()
 export default class FakeMailerService extends AbstractMailer {
+  public mails: MailOptions[] = [];
+
   async send(options: MailOptions) {
-    console.log('Sending mail...');
+    this.mails.push({ ...options });
     await sleep(1000);
-    console.log('Mail sent!', { ...options });
+    console.log('Mail sent!', options);
   }
 }

@@ -5,6 +5,7 @@ import ReqResUserDto from '../dto/response/reqResUser.dto';
 
 export default abstract class AbstractUserRepository {
   abstract createUser(createUserDto: CreateUserRequestDto): Promise<User>;
+  abstract getUserByEmail(email: string): Promise<User | null>;
   abstract getUserById(userId: string): Promise<ReqResUserDto | null>;
   abstract getUserAvatar(userId: string): Promise<Avatar | null>;
   abstract createAvatar(

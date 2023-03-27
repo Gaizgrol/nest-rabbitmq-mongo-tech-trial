@@ -1,14 +1,21 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+
+import { randomUUID } from 'crypto';
 
 import AbstractUserRepository from './repository/user.repository.abstract';
 
 import CreateUserRequestDto from './dto/request/createUser.dto';
 import GetUserResponseDto from './dto/response/getUser.dto';
-import { randomUUID } from 'crypto';
+
 import AbstractStorage from 'src/storage/storage.abstract';
 import AbstractHttpClient from 'src/http/client.abstract';
 import AbstractMessaging from 'src/messaging/messaging.abstract';
 import AbstractMailer from 'src/mail/mailer.abstract';
+import ReqResUserDto from './dto/response/reqResUser.dto';
 
 @Injectable()
 export class UserService {
@@ -23,6 +30,12 @@ export class UserService {
   async createUser(
     createUserDto: CreateUserRequestDto,
   ): Promise<GetUserResponseDto> {
+    const { email } = createUserDto;
+    const existingUser = await this.userRepository.getUserByEmail(email);
+    if (existingUser) {
+      throw new ConflictException(`This email was already registered!`);
+    }
+
     const storedUser = await this.userRepository.createUser(createUserDto);
     await Promise.all([
       this.messaging.sendTo('MESSAGES', `Created user ${storedUser.id}`),
@@ -32,19 +45,17 @@ export class UserService {
         content: 'Your account has been created!',
       }),
     ]);
+
     return storedUser;
   }
 
-  async getUser(userId: string): Promise<GetUserResponseDto> {
+  async getUser(userId: string): Promise<ReqResUserDto> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
-      throw new HttpException(
-        `User ${userId} not found!`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(`User ${userId} not found!`);
     }
-    const { id, email, first_name: firstName, last_name: lastName } = user;
-    return { id, email, firstName, lastName };
+
+    return user;
   }
 
   async getAvatar(userId: string): Promise<string> {
@@ -55,19 +66,10 @@ export class UserService {
 
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
-      throw new HttpException(
-        `User ${userId} not found!`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException({ toJSON: () => undefined });
     }
 
-    const { success, content } = await this.httpClient.file(user.avatar);
-    if (!success) {
-      throw new HttpException(
-        `Could not find user's ${userId} avatar!`,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+    const { content } = await this.httpClient.file(user.avatar);
 
     const buffer = Buffer.from(content);
     const contentBase64 = `data:image/jpeg;base64,${buffer.toString('base64')}`;
@@ -83,10 +85,7 @@ export class UserService {
   async removeAvatar(userId: string): Promise<void> {
     const avatar = await this.userRepository.getUserAvatar(userId);
     if (!avatar) {
-      throw new HttpException(
-        `Could not find user ${userId}'s avatar!`,
-        HttpStatus.NOT_FOUND,
-      );
+      throw new NotFoundException(`Could not find user ${userId}'s avatar!`);
     }
 
     await this.userRepository.removeAvatar(userId);

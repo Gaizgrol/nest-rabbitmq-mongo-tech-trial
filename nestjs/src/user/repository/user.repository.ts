@@ -19,10 +19,23 @@ export default class UserRepository implements AbstractUserRepository {
     this.manager = this.dataSource.mongoManager;
   }
 
+  private makeId() {
+    return Math.round(Math.random() * Number.MAX_SAFE_INTEGER);
+  }
+
   async createUser(createUserDto: CreateUserRequestDto): Promise<User> {
-    const newUser = this.manager.create(User, { ...createUserDto });
+    const newUser = this.manager.create(User, {
+      ...createUserDto,
+      id: `${this.makeId()}`,
+    });
     await this.manager.save(newUser);
     return newUser;
+  }
+
+  getUserByEmail(email: string): Promise<User | null> {
+    return this.manager.findOne(User, {
+      where: { email },
+    });
   }
 
   async getUserById(userId: string): Promise<ReqResUserDto | null> {
@@ -33,7 +46,7 @@ export default class UserRepository implements AbstractUserRepository {
     return success ? user : null;
   }
 
-  async getUserAvatar(userId: string): Promise<Avatar | null> {
+  getUserAvatar(userId: string): Promise<Avatar | null> {
     return this.manager.findOne(Avatar, {
       where: { userId },
     });
