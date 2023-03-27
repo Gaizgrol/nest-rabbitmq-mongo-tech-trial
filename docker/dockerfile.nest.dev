@@ -3,6 +3,8 @@ FROM node:18-alpine
 WORKDIR /app
 
 COPY nestjs .
+COPY docker/nest-entrypoint.sh /bin/entrypoint.sh
 
-RUN npm ci
 RUN npm install -g @nestjs/cli
+
+ENTRYPOINT [ "/bin/entrypoint.sh" ]

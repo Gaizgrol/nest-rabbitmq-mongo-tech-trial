@@ -14,7 +14,6 @@ services:
     volumes:
       - ../nestjs:/app
     working_dir: /app
-    entrypoint: ["npm", "run", "start:dev"]
     environment:
       DATABASE_HOST: database-mongo
       DATABASE_PORT: 27017
