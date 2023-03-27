@@ -1,4 +1,4 @@
-name: payever-tech-interview
+name: tech-interview
 services:
   back-nest:
     container_name: nest
@@ -17,7 +17,7 @@ services:
     environment:
       DATABASE_HOST: database-mongo
       DATABASE_PORT: 27017
-      DATABASE_NAME: payever-tech-interview
+      DATABASE_NAME: tech-interview
       DATABASE_USER: api
       DATABASE_PASSWORD: anotherexample
       MESSAGING_SERVICE_HOSTNAME: management-rabbit-mq
@@ -36,7 +36,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       API_USER_NAME: api
       API_USER_PASSWORD: anotherexample
-      API_USER_DATABASE: payever-tech-interview
+      API_USER_DATABASE: tech-interview
     volumes:
       - ../mongo/db:/data/db
       - ../mongo/init.js:/docker-entrypoint-initdb.d/init.js
@@ -60,7 +60,6 @@ services:
     container_name: rabbit-mq
     image: rabbitmq:3.11-management
     ports:
-      - 5672:5672
       - 15672:15672
     environment:
       - RABBITMQ_DEFAULT_USER=user

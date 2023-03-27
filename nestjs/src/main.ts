@@ -11,7 +11,7 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(
     app,
     new DocumentBuilder()
-      .setTitle('Payever Tech Trial')
+      .setTitle('Nest.JS + RabbitMQ + MongoDB Tech Trial')
       .setDescription(
         'The task is to create a simple REST application from scratch using Nest.js (TypeScript), RabbitMQ, MongoDB and integration with ReqResAPI.',
       )
