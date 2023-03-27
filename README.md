@@ -1,5 +1,23 @@
 # Backend Task - NestJS + RabbitMQ + MongoDB
 
+## Contents:
+
+🎯 Objective
+
+🏃 Running the project
+
+📄 Scripts
+
+🔍 Visualizing Data
+
+📚 API Documentation and endpoint testing
+
+📂 FileSystem Storage
+
+🚧 Troubleshooting
+
+---
+
 ## 🎯 Objective
 
 The task is to create a simple REST application from scratch. Using NestJS (TypeScript), MongoDB, RabbitMQ and integrate some endpoints to ReqRes API.
